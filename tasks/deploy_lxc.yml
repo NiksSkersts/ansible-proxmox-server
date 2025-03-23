@@ -8,9 +8,9 @@
     api_host: "{{ proxmox.api_host }}"
     api_token_id: "{{ proxmox.token_id | default(omit) }}"
     api_token_secret: "{{ proxmox.token_secret | default(omit) }}"
-    vmid: "{{ item.vm_id }}"
+    vmid: "{{ hostvars[item].vm_id }}"
     node: "{{ ansible_hostname }}"
-    hostname: "{{ item.name }}"
+    hostname: "{{ hostvars[item].name }}"
   register: "vm_status"
 
 - name: Download Template
@@ -52,17 +52,17 @@
         api_password: "{{ proxmox.api_password }}"
         api_host: "{{ proxmox.api_host }}"
         node: "{{ ansible_hostname }}"
-        hostname: "{{ item.name }}"
-        vmid: "{{ item.vm_id }}"
+        hostname: "{{ hostvars[item].name }}"
+        vmid: "{{ hostvars[item].vm_id }}"
         onboot: true
-        cores: "{{ item.cpu_cores }}"
-        memory: "{{ item.vm_memory }}"
-        swap: "{{ item.vm_memory }}"
+        cores: "{{ hostvars[item].cpu_cores }}"
+        memory: "{{ hostvars[item].vm_memory }}"
+        swap: "{{ hostvars[item].vm_memory }}"
         ostemplate: "{{ templ }}"
         storage: "local-zfs"
         password: "{{ proxmox.api_password }}"
         searchdomain: "{{ ansible_facts['fqdn'] }}"
-        nameserver: "{{ item.dns }}"
+        nameserver: "{{ hostvars[item].dns }}"
         pubkey: "{{ ssh.pub }}"
 
     - name: "Wait for VM create"
@@ -76,12 +76,12 @@
         api_password: "{{ proxmox.api_password }}"
         api_host: "{{ proxmox.api_host }}"
         node: "{{ ansible_hostname }}"
-        hostname: "{{ item.name }}"
-        vmid: "{{ item.vm_id }}"
-        netif: '{"net{{ inner_item.id }}":"name=eth{{ inner_item.id }},bridge={{ inner_item.bridge }},firewall=0,ip={{ inner_item.ip }}/{{ inner_item.subnet }}{% if item.1.gw is defined and item.1.gw %},gw={{ inner_item.gw }}{%endif%}"}'
+        hostname: "{{ hostvars[item].name }}"
+        vmid: "{{ hostvars[item].vm_id }}"
+        netif: '{"net{{ inner_item.id }}":"name=eth{{ inner_item.id }},bridge={{ inner_item.bridge }},firewall=0,ip={{ inner_item.ip }}/{{ inner_item.subnet }}{% if hostvars[item].1.gw is defined and hostvars[item].1.gw %},gw={{ inner_item.gw }}{%endif%}"}'
       loop_control:
         loop_var: inner_item
-      loop: "{{ item.netn }}"
+      loop: "{{ hostvars[item].netn }}"
 
     # Start the virtual machine.
     - name: "Start VM."
@@ -89,7 +89,7 @@
         api_user: "{{ proxmox.api_user }}"
         api_password: "{{ proxmox.api_password }}"
         api_host: "{{ proxmox.api_host }}"
-        vmid: "{{ item.vm_id }}"
+        vmid: "{{ hostvars[item].vm_id }}"
         state: started
 
     # It will delay this task for 60 seconds and timeout after 180.
