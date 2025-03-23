@@ -36,26 +36,3 @@ token_defs:
         role: PVEAuditor
       - path: /vms
         role: PVEAuditor
-
-lxc_defs: []
-
-vm_defs: []
-  # - vm_id: 100
-  #   name: debian
-  #   cpu_cores: 2
-  #   vm_memory: 1024
-  #   dns: 1.1.1.1
-  #   diskn:
-  #     - id: 1
-  #       disk_key: scsi0
-  #       disk_backup: "true"
-  #       disk_discard: "on"
-  #       disk_dest_pool: '{{ def_pool }}'
-  #       disk_size: 32G
-  #   netn:
-  #     - id: 0
-  #       bridge: vmbr0
-  #       ip: 192.168.1.2
-  #       gw: 192.168.1.1
-  #       subnet: 24
-  #       tag: 1111
