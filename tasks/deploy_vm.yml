@@ -1,5 +1,4 @@
 ---
-# tasks file for roles/proxmox-role-vm
 
 - name: "{{ hostvars[item].name }} | Check if VM exists"
   community.general.proxmox_vm_info:
@@ -17,20 +16,20 @@
   when: vm_status.proxmox_vms | length<1
   vars:
     # Select the file name without ext.
-    template_name: '{{ template | basename | regex_replace("^([^\.]*).*", "\1") }}'
-    template_ext: '{{ template | basename | regex_replace(".(\w+)$", "\1") }}'
+    template_name: '{{ item.template | basename | regex_replace("^([^\.]*).*", "\1") }}'
+    template_ext: '{{ item.template | basename | regex_replace(".(\w+)$", "\1") }}'
     cloud_image_path: null
   block:
 
     - name: "Download template"
       retries: 3
       ansible.builtin.get_url:
-        url: "{{ template }}"
+        url: "{{ item.template }}"
         dest: "{{ template_destination_path }}"
-        checksum: "{{ template_sha512 }}"
+        checksum: "{{ item.template_sha512 }}"
 
     - name: Deal with Archives
-      when: 'template | basename | regex_search("\.(zip|tar|xz|gz|bz2|7z)$")'
+      when: 'item.template | basename | regex_search("\.(zip|tar|xz|gz|bz2|7z)$")'
       block:
         
         - name: "Ensure exists {{ template_destination_path }}/{{ template_name }}"
@@ -43,7 +42,7 @@
         # TODO find less expensive way to do this
         - name: "Unarchive the downloaded archive."
           ansible.builtin.unarchive:
-            src: "{{ template_destination_path }}/{{template | basename}}"
+            src: "{{ template_destination_path }}/{{item.template | basename}}"
             dest: "{{ template_destination_path }}/{{ template_name }}"
             remote_src: true
             mode: '0644'
@@ -66,12 +65,12 @@
             cloud_image_path: "{{ found_files.files[0].path }}"
 
     - name: Deal with QCOW2 and RAW files
-      when: 'template | basename | regex_search("\.(qcow2|raw)$")'
+      when: 'item.template | basename | regex_search("\.(qcow2|raw)$")'
       block:
 
         - name: Set cloud_image_path
           ansible.builtin.set_fact: 
-            cloud_image_path: '{{ template_destination_path }}/{{ template | basename }}'
+            cloud_image_path: '{{ template_destination_path }}/{{ item.template | basename }}'
 
   # Create a new VM only when vm_status returns empty array.
 - name: "{{ hostvars[item].name }} | Stop and remove VM"
