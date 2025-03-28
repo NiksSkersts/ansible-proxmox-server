@@ -148,8 +148,8 @@
         discard: "{{ inner_item.disk_discard | default(omit) }}"
         format: "{{ inner_item.disk_format | default('raw')  }}"
         storage: "{{ inner_item.disk_dest_pool | default(def_pool) }}"
-        import_from: "{{ cloud_image_path | default(omit) }}"
-        size: "{{ inner_item.disk_size if cloud_image_path is not defined else omit }}"
+        import_from: "{{ cloud_image_path if inner_item.id == 1 else omit }}"
+        size: "{{ inner_item.disk_size if inner_item.id != 1 else omit }}"
         iothread : "{{ inner_item.iothread | default('true') }}"
         state: "present"
       loop_control:
