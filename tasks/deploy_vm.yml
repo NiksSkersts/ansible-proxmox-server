@@ -18,7 +18,6 @@
     # Select the file name without ext.
     template_name: '{{ item.template | basename | regex_replace("^([^\.]*).*", "\1") }}'
     template_ext: '{{ item.template | basename | regex_replace(".(\w+)$", "\1") }}'
-    cloud_image_path: null
   block:
 
     - name: "Download template"
