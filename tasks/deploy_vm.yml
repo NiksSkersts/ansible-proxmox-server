@@ -206,7 +206,9 @@
         timeout: 10
 
     # Resize disk to "{{ vm_disk_size }}" size. This is not an add function.
+    # Required only for boot disks.
     - name: "{{ hostvars[item].name }} | Ensure disks resized"
+      when: inner_item.id == 1
       community.general.proxmox_disk:
         api_user: "{{ proxmox.api_user }}"
         api_password: "{{ proxmox.api_password }}"
