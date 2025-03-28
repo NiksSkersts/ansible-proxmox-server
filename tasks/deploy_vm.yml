@@ -14,6 +14,7 @@
   register: "vm_status"
 
 - name: Download Template
+  vm_status.proxmox_vms | length<1
   vars:
     # Select the file name without ext.
     template_name: '{{ template | basename | regex_replace("^([^\.]*).*", "\1") }}'
