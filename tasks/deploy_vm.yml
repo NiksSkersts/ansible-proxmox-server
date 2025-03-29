@@ -119,7 +119,7 @@
         cores: "{{ hostvars[item].cpu_cores }}"
         memory: "{{ hostvars[item].vm_memory }}"
         efidisk0:
-          storage: "{{ hostvars[item].dest_disk | default(default(hostvars[item].default_pool) }}"
+          storage: "{{ hostvars[item].dest_disk | default(hostvars[item].default_pool) }}"
           format: raw
           efitype: 4m
           pre_enrolled_keys: 1 # Set this to 0 to disable Secure Boot
@@ -146,7 +146,7 @@
         backup: "{{ inner_item.disk_backup | default(omit) }}"
         discard: "{{ inner_item.disk_discard | default(omit) }}"
         format: "{{ inner_item.disk_format | default('raw')  }}"
-        storage: "{{ inner_item.disk_dest_pool | default(default(hostvars[item].default_pool) }}"
+        storage: "{{ inner_item.disk_dest_pool | default(hostvars[item].default_pool) }}"
         import_from: "{{ cloud_image_path if inner_item.id == 1 else omit }}"
         size: "{{ inner_item.disk_size if inner_item.id != 1 else omit }}"
         iothread : "{{ inner_item.iothread | default('true') }}"
